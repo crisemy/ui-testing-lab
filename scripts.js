@@ -562,15 +562,25 @@ function closeEntryAd(overlay) {
 }
 
 // EXIT INTENT
-let exitTriggered = false;
+let exitTimer = null;
+let exitCooldown = false;
+
 document.addEventListener('mouseleave', function(e) {
-    if (e.clientY <= 0 && !exitTriggered) {
-        showExitIntent();
+    if (e.clientY > 0 || exitCooldown) return;
+    exitTimer = setTimeout(showExitIntent, 10000);
+});
+
+document.addEventListener('mouseenter', function() {
+    if (exitTimer) {
+        clearTimeout(exitTimer);
+        exitTimer = null;
     }
 });
 
 function showExitIntent() {
-    exitTriggered = true;
+    exitTimer = null;
+    exitCooldown = true;
+    setTimeout(() => { exitCooldown = false; }, 10000);
     const overlay = document.createElement('div');
     overlay.className = 'modal-overlay';
     overlay.id = 'exit-modal';
